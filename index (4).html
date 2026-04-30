@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raio-X da Logística Brasileira | Emiteaí</title>
+    <meta name="description" content="Dashboard interativo com dados públicos sobre logística, transporte, e-commerce e oportunidade de digitalização no Brasil.">
+    <link rel="icon" href="https://emiteai.com.br/wp-content/uploads/2023/11/cropped-emiteai-logo-32x32.png">
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+    <script crossorigin src="https://unpkg.com/recharts@2.5.0/umd/Recharts.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone@7.24.4/babel.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
+        #root { min-height: 100vh; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+        const { BarChart, Bar, LineChart, Line, AreaChart, Area, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend, ComposedChart, PieChart, Pie } = Recharts;
+
+
+const LOGO_WHITE = "data:image/png;base64,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";
+
+
+// ═══════════════════════════════════════════
+// DATA LAYER - All research data consolidated
+// ═══════════════════════════════════════════
+
+const COLORS = {
+  bg: "#FFFFFF",
+  card: "#F7F6FB",
+  cardHover: "#EEEDFA",
+  border: "#E5E2F0",
+  accent: "#4338CA",
+  accentLight: "#6366F1",
+  gold: "#F472B6",
+  goldLight: "#F9A8D4",
+  green: "#10b981",
+  red: "#ef4444",
+  purple: "#7C3AED",
+  cyan: "#06b6d4",
+  pink: "#F472B6",
+  text: "#1E1B4B",
+  textMuted: "#4B4580",
+  textDim: "#8B85B1",
+  gridStroke: "#E5E2F0",
+  tooltipBg: "#1E1B4B",
+  inputBg: "#F0EEF8",
+};
+
+const REGION_COLORS = {
+  Sudeste: "#4338CA",
+  Sul: "#10b981",
+  Nordeste: "#F472B6",
+  "Centro-Oeste": "#7C3AED",
+  Norte: "#06b6d4",
+};
+
+const BIG_NUMBERS = [
+  { id: "frota", value: "2,24 mi", label: "Caminhões no Brasil", sub: "Frota ativa de veículos de carga", source: "SENATRAN", year: 2024, confidence: "Alta", note: "Idade média: 12 anos. Renovação lenta = oportunidade de modernização via tecnologia." },
+  { id: "transport", value: "1,2 mi", label: "Transportadores", sub: "Registros ativos RNTRC", source: "ANTT/RNTRC", year: 2025, confidence: "Alta", note: "Altamente fragmentado: maioria opera com 1-3 veículos. O mercado precisa de integração." },
+  { id: "ecom_ped", value: "440 mi", label: "Pedidos E-Commerce/ano", sub: "1 pedido a cada 7 segundos", source: "ABComm", year: 2025, confidence: "Alta", note: "Crescimento de 47% em volume (2020-2025), mas apenas 10% em faturamento. Margens comprimidas." },
+  { id: "ecom_fat", value: "R$ 224,7 bi", label: "Faturamento E-Commerce", sub: "+10% vs 2024", source: "ABComm", year: 2025, confidence: "Alta", note: "Volume cresceu 4,7× mais que receita. Cada pedido rende menos. Eficiência logística é sobrevivência." },
+  { id: "frete", value: "R$ 7,99/km", label: "Frete Rodoviário", sub: "+14,4% acumulado 2025", source: "Edenred IFR", year: 2026, confidence: "Alta", note: "Diesel = 30-35% do custo. Com diesel a R$ 7,35/L, cada centavo importa." },
+  { id: "cte", value: "22,2 bi", label: "CT-e Emitidos (total)", sub: "121,2 mil emissores ativos", source: "Receita Federal", year: 2026, confidence: "Alta", note: "~1,5-2 bi/ano atualmente. Cada operação gera 5-8 documentos. Automação é crítica." },
+];
+
+const ECOMMERCE_SERIES = [
+  { year: 2020, faturamento: 106, pedidos: 300, ticketMedio: 353 },
+  { year: 2021, faturamento: 128, pedidos: 340, ticketMedio: 376 },
+  { year: 2022, faturamento: 154, pedidos: 380, ticketMedio: 405 },
+  { year: 2023, faturamento: 200, pedidos: 400, ticketMedio: 500 },
+  { year: 2024, faturamento: 204, pedidos: 420, ticketMedio: 486 },
+  { year: 2025, faturamento: 224.7, pedidos: 440, ticketMedio: 511 },
+];
+
+const FRETE_DIESEL = [
+  { period: "2024", frete: 6.50, diesel: 5.80, freteVar: null, dieselVar: null },
+  { period: "Jan/25", frete: 6.55, diesel: 5.85, freteVar: 0.8, dieselVar: 0.9 },
+  { period: "Jun/25", frete: 6.90, diesel: 5.95, freteVar: 5.3, dieselVar: 1.7 },
+  { period: "Nov/25", frete: 7.31, diesel: 6.10, freteVar: 5.9, dieselVar: 2.5 },
+  { period: "Dez/25", frete: 7.44, diesel: 6.20, freteVar: 1.8, dieselVar: 1.6 },
+  { period: "Jan/26", frete: 7.61, diesel: 6.80, freteVar: 2.3, dieselVar: 9.7 },
+  { period: "Mar/26", frete: 7.99, diesel: 7.35, freteVar: 3.4, dieselVar: 8.1 },
+];
+
+const CUSTO_COMPOSICAO = [
+  { name: "Combustível", value: 32, fill: "#ef4444" },
+  { name: "Manutenção", value: 18, fill: "#F472B6" },
+  { name: "Pneus", value: 12, fill: "#7C3AED" },
+  { name: "Pedágio", value: 13, fill: "#4338CA" },
+  { name: "Mão de obra", value: 17, fill: "#10b981" },
+  { name: "Depreciação", value: 8, fill: "#06b6d4" },
+];
+
+const ESTADOS = [
+  { uf: "SP", nome: "São Paulo", regiao: "Sudeste", frota: 450, transp: 180, ecomVol: 120, ecomGrowth: 8, custoFrete: 7.99, opp: 95, verticais: ["E-commerce", "Alimentos", "Moda", "Eletrônicos"], rotas: ["SP-RJ", "SP-MG", "SP-PR"] },
+  { uf: "MG", nome: "Minas Gerais", regiao: "Sudeste", frota: 280, transp: 95, ecomVol: 55, ecomGrowth: 137, custoFrete: 7.85, opp: 88, verticais: ["Agronegócio", "Mineração", "E-commerce"], rotas: ["MG-SP", "MG-RJ", "MG-BA"] },
+  { uf: "PR", nome: "Paraná", regiao: "Sul", frota: 220, transp: 75, ecomVol: 45, ecomGrowth: 12, custoFrete: 7.92, opp: 85, verticais: ["Agronegócio", "E-commerce", "Alimentos"], rotas: ["PR-SP", "PR-SC", "PR-RS"] },
+  { uf: "RS", nome: "Rio Grande do Sul", regiao: "Sul", frota: 210, transp: 68, ecomVol: 38, ecomGrowth: 150, custoFrete: 8.05, opp: 84, verticais: ["Agronegócio", "E-commerce", "Calçados"], rotas: ["RS-SP", "RS-PR", "RS-SC"] },
+  { uf: "BA", nome: "Bahia", regiao: "Nordeste", frota: 145, transp: 48, ecomVol: 28, ecomGrowth: 95, custoFrete: 8.15, opp: 72, verticais: ["Agronegócio", "Petroquímica", "E-commerce"], rotas: ["BA-SP", "BA-MG", "BA-PE"] },
+  { uf: "GO", nome: "Goiás", regiao: "Centro-Oeste", frota: 125, transp: 42, ecomVol: 22, ecomGrowth: 118, custoFrete: 8.22, opp: 70, verticais: ["Agronegócio", "E-commerce", "Fertilizantes"], rotas: ["GO-SP", "GO-MG", "GO-DF"] },
+  { uf: "SC", nome: "Santa Catarina", regiao: "Sul", frota: 110, transp: 38, ecomVol: 35, ecomGrowth: 279, custoFrete: 8.10, opp: 82, verticais: ["E-commerce", "Têxtil", "Alimentos"], rotas: ["SC-SP", "SC-PR", "SC-RS"] },
+  { uf: "RJ", nome: "Rio de Janeiro", regiao: "Sudeste", frota: 105, transp: 35, ecomVol: 32, ecomGrowth: 22, custoFrete: 7.88, opp: 75, verticais: ["E-commerce", "Petróleo", "Alimentos"], rotas: ["RJ-SP", "RJ-MG", "RJ-ES"] },
+  { uf: "PE", nome: "Pernambuco", regiao: "Nordeste", frota: 95, transp: 32, ecomVol: 18, ecomGrowth: 85, custoFrete: 8.28, opp: 62, verticais: ["Agronegócio", "E-commerce", "Alimentos"], rotas: ["PE-BA", "PE-CE", "PE-SP"] },
+  { uf: "MT", nome: "Mato Grosso", regiao: "Centro-Oeste", frota: 92, transp: 31, ecomVol: 11, ecomGrowth: 88, custoFrete: 8.42, opp: 65, verticais: ["Agronegócio", "E-commerce", "Alimentos"], rotas: ["MT-SP", "MT-GO", "MT-MG"] },
+  { uf: "ES", nome: "Espírito Santo", regiao: "Sudeste", frota: 88, transp: 28, ecomVol: 16, ecomGrowth: 248, custoFrete: 8.05, opp: 68, verticais: ["E-commerce", "Minério", "Celulose"], rotas: ["ES-SP", "ES-MG", "ES-RJ"] },
+  { uf: "CE", nome: "Ceará", regiao: "Nordeste", frota: 78, transp: 26, ecomVol: 14, ecomGrowth: 72, custoFrete: 8.35, opp: 55, verticais: ["E-commerce", "Alimentos", "Têxtil"], rotas: ["CE-BA", "CE-PE", "CE-SP"] },
+  { uf: "MS", nome: "Mato Grosso do Sul", regiao: "Centro-Oeste", frota: 68, transp: 23, ecomVol: 9, ecomGrowth: 75, custoFrete: 8.38, opp: 58, verticais: ["Agronegócio", "E-commerce", "Celulose"], rotas: ["MS-SP", "MS-PR", "MS-GO"] },
+  { uf: "PA", nome: "Pará", regiao: "Norte", frota: 58, transp: 19, ecomVol: 7, ecomGrowth: 92, custoFrete: 8.65, opp: 52, verticais: ["Agronegócio", "Mineração", "E-commerce"], rotas: ["PA-SP", "PA-GO", "PA-BA"] },
+  { uf: "MA", nome: "Maranhão", regiao: "Nordeste", frota: 52, transp: 17, ecomVol: 6, ecomGrowth: 68, custoFrete: 8.52, opp: 42, verticais: ["Agronegócio", "E-commerce", "Alimentos"], rotas: ["MA-BA", "MA-CE", "MA-SP"] },
+  { uf: "DF", nome: "Distrito Federal", regiao: "Centro-Oeste", frota: 45, transp: 15, ecomVol: 12, ecomGrowth: 65, custoFrete: 8.18, opp: 50, verticais: ["E-commerce", "Alimentos", "Serviços"], rotas: ["DF-GO", "DF-MG", "DF-SP"] },
+];
+
+const VERTICAIS = [
+  { id: "ecommerce", nome: "E-Commerce", icon: "🛒", fat: 224.7, pedidos: 440, crescimento: 10, cresc5a: 47, toneladas: 22, transp: 280, sla: 3, entregas3d: 55, docs: 8, complexidade: "Muito Alta", oppScore: 95, roi: "15-25%", margem: "8-12%", custoFrete: 7.95, desafios: ["Múltiplos parceiros de transporte", "Prazos curtos (até 3 dias)", "Complexidade documental alta", "Rastreamento real-time obrigatório", "Taxa de ocorrências elevada"], leitura: "O e-commerce movimenta 440 mi de pedidos/ano, mas o faturamento cresce 4,7× mais devagar que o volume. Isso significa que cada pedido rende menos — e o custo de entrega pesa mais na margem. Com 280 mil transportadores envolvidos e 8 documentos por operação, a fragmentação e a complexidade documental são as maiores travas. Quem não automatiza, perde margem a cada pedido." },
+  { id: "agronegocio", nome: "Agronegócio", icon: "🌾", fat: 380, pedidos: 85, crescimento: 5, cresc5a: 18, toneladas: 420, transp: 150, sla: 7, entregas3d: 15, docs: 5, complexidade: "Alta", oppScore: 72, roi: "10-18%", margem: "12-18%", custoFrete: 8.35, desafios: ["Sazonalidade forte (colheita vs entressafra)", "Distâncias de até 2.000 km", "Cargas pesadas (até 30 ton)", "Infraestrutura precária em regiões remotas", "Volatilidade de commodities"], leitura: "O agro é o maior setor em tonelagem (420 mi ton/ano), mas opera com lógica própria: sazonalidade extrema, distâncias longas e infraestrutura frágil. A oportunidade de TMS não está no volume de documentos, mas na otimização de rotas longas e na consolidação de cargas durante a safra. A cada 1% de redução no custo de frete, a economia anual é bilionária." },
+  { id: "alimentos", nome: "Alimentos e Bebidas", icon: "🍔", fat: 280, pedidos: 120, crescimento: 8, cresc5a: 35, toneladas: 180, transp: 95, sla: 2, entregas3d: 85, docs: 7, complexidade: "Muito Alta", oppScore: 90, roi: "18-28%", margem: "6-10%", custoFrete: 8.20, desafios: ["Controle de temperatura obrigatório", "Prazos muito curtos (até 2 dias)", "Conformidade sanitária (ANVISA/SIF)", "Rastreabilidade de lote obrigatória", "Perdas por contaminação/avaria"], leitura: "Alimentos combinam o pior cenário: SLA curto (2 dias), regulação pesada (ANVISA), cadeia fria obrigatória e margem de transportador de apenas 6-10%. Um erro de rota ou uma falha de temperatura pode destruir uma carga inteira. É o setor onde TMS tem o maior ROI potencial (18-28%) justamente porque o custo da ineficiência é altíssimo." },
+  { id: "moda", nome: "Moda e Vestuário", icon: "👗", fat: 165, pedidos: 95, crescimento: 12, cresc5a: 52, toneladas: 8.5, transp: 75, sla: 4, entregas3d: 45, docs: 6, complexidade: "Alta", oppScore: 68, roi: "12-20%", margem: "10-15%", custoFrete: 7.85, desafios: ["Devoluções de até 30%", "Sazonalidade por coleção", "Múltiplos SKUs por pedido", "Rastreamento de lotes/cores/tamanhos", "Logística reversa complexa"], leitura: "Moda é o setor com maior taxa de devolução no Brasil (até 30%). Cada devolução gera uma cadeia documental reversa completa. Com 95 mi de pedidos/ano e crescimento de 12%, a complexidade está na logística reversa — não no transporte de ida. Empresas sem controle de reversa sangram margem silenciosamente." },
+  { id: "eletronicos", nome: "Eletrônicos", icon: "📱", fat: 145, pedidos: 65, crescimento: 14, cresc5a: 58, toneladas: 3.2, transp: 55, sla: 3, entregas3d: 60, docs: 8, complexidade: "Muito Alta", oppScore: 85, roi: "20-30%", margem: "8-12%", custoFrete: 8.10, desafios: ["Alto valor agregado (risco de roubo)", "Fragilidade da carga", "GPS obrigatório", "Seguro de transporte complexo", "Conformidade de importação"], leitura: "Eletrônicos têm o maior risco por carga transportada. Um caminhão de smartphones pode valer mais que a frota inteira de uma transportadora. GPS obrigatório, escolta e seguro complexo tornam a gestão operacional cara e burocrática. TMS com rastreamento integrado reduz sinistros e custos de seguro em 20-30%." },
+  { id: "medicamentos", nome: "Farmacêutica", icon: "💊", fat: 120, pedidos: 45, crescimento: 16, cresc5a: 65, toneladas: 1.8, transp: 35, sla: 2, entregas3d: 90, docs: 9, complexidade: "Crítica", oppScore: 92, roi: "25-35%", margem: "5-8%", custoFrete: 8.45, desafios: ["ANVISA extremamente rigorosa", "Cadeia fria obrigatória", "Rastreabilidade de lote (SNCM)", "Farmacovigilância", "Documentação de importação"], leitura: "Farma é o setor mais regulado do transporte brasileiro. 9 documentos por operação, rastreabilidade de lote obrigatória (SNCM), cadeia fria sem margem de erro. Qualquer não-conformidade gera interdição. É o setor com maior crescimento (16% ao ano) e maior ROI de TMS (25-35%), porque o custo de um erro é catastrófico." },
+  { id: "combustivel", nome: "Combustíveis", icon: "⛽", fat: 95, pedidos: 0, crescimento: 3, cresc5a: 8, toneladas: 85, transp: 28, sla: 1, entregas3d: 100, docs: 10, complexidade: "Crítica", oppScore: 70, roi: "8-15%", margem: "3-6%", custoFrete: 8.80, desafios: ["Regulação ANTT rigorosa", "Conformidade ambiental", "GPS e escolta obrigatórios", "Documento de risco (AMDTR)", "Margem mínima"], leitura: "Combustíveis operam com a maior carga documental (10 docs/operação) e a menor margem (3-6%). É um setor onde qualquer ineficiência é fatal. A regulação é a mais pesada do transporte brasileiro. TMS aqui não é diferencial — é requisito para operar sem multas." },
+  { id: "mineracao", nome: "Mineração", icon: "⛏️", fat: 85, pedidos: 0, crescimento: 4, cresc5a: 12, toneladas: 520, transp: 42, sla: 5, entregas3d: 20, docs: 5, complexidade: "Alta", oppScore: 55, roi: "8-12%", margem: "5-10%", custoFrete: 8.65, desafios: ["Cargas até 50 toneladas", "Regiões remotas", "Conformidade IBAMA/DNPM", "Rastreabilidade de origem", "Distâncias até 2.500 km"], leitura: "Mineração é o maior setor em tonelagem bruta (520 mi ton/ano), mas opera com poucos players e rotas fixas. A oportunidade de TMS é menor em complexidade documental, mas significativa em otimização de rotas longas e conformidade ambiental." },
+];
+
+const REGIOES_DATA = [
+  { regiao: "Sudeste", frota: 923, transp: 288, ecomVol: 223, growth: 32, estados: 4, cor: COLORS.accent },
+  { regiao: "Sul", frota: 540, transp: 181, ecomVol: 118, growth: 147, estados: 3, cor: COLORS.green },
+  { regiao: "Nordeste", frota: 372, transp: 131, ecomVol: 77, growth: 65, estados: 9, cor: COLORS.gold },
+  { regiao: "Centro-Oeste", frota: 330, transp: 111, ecomVol: 54, growth: 86, estados: 4, cor: COLORS.purple },
+  { regiao: "Norte", frota: 175, transp: 58, ecomVol: 16, growth: 54, estados: 7, cor: COLORS.cyan },
+];
+
+const DOC_JOURNEY = [
+  { step: 1, name: "Pedido/Cotação", doc: "Pedido de compra", risk: "Erro de endereço, quantidade errada", auto: "Integração ERP → TMS", tms: "Captura automática do pedido" },
+  { step: 2, name: "NF-e", doc: "Nota Fiscal Eletrônica", risk: "ICMS errado, rejeição SEFAZ", auto: "Emissão automática via ERP", tms: "Validação de campos obrigatórios" },
+  { step: 3, name: "CT-e", doc: "Conhecimento de Transporte", risk: "Dados divergentes da NF-e", auto: "Emissão automática pelo TMS", tms: "Emissão, validação e vínculo com NF-e" },
+  { step: 4, name: "MDF-e", doc: "Manifesto de Documentos Fiscais", risk: "CT-e não vinculado, veículo errado", auto: "Geração automática por viagem", tms: "Consolidação automática de CT-e" },
+  { step: 5, name: "CIOT", doc: "Código da Operação de Transporte", risk: "Não emissão = multa ANTT", auto: "Geração integrada ao CT-e", tms: "Emissão automática com vale-pedágio" },
+  { step: 6, name: "Rastreamento", doc: "Tracking / GPS", risk: "Perda de visibilidade, sinistro", auto: "Integração com rastreadores", tms: "Dashboard real-time de todas as cargas" },
+  { step: 7, name: "Ocorrência", doc: "Registro de evento", risk: "Perda sem registro, sem prova", auto: "App motorista + foto + GPS", tms: "Workflow de tratativa com SLA" },
+  { step: 8, name: "Entrega", doc: "Comprovante (canhoto/digital)", risk: "Canhoto perdido, entrega contestada", auto: "Comprovante digital com foto", tms: "Baixa automática no sistema" },
+  { step: 9, name: "Auditoria", doc: "Conferência de frete", risk: "Cobrança indevida, duplicidade", auto: "Comparação automática tabela vs cobrado", tms: "Alerta de divergência em tempo real" },
+  { step: 10, name: "Pagamento", doc: "Ordem de pagamento", risk: "Atraso, erro de valor", auto: "Liberação após conferência OK", tms: "Fluxo de aprovação com regras" },
+];
+
+const GAPS_ANALYSIS = [
+  { area: "Frota por estado", status: "Estimativa", detail: "Dados de frota estadual baseados em proporção da frota total SENATRAN. Recomendação: usar consulta direta ao SENATRAN mensal por UF.", severity: "medium" },
+  { area: "Crescimento e-commerce por UF", status: "Fonte parcial", detail: "ABComm publica dados nacionais. Crescimento por estado (SC +279%, ES +248%) vem de relatórios regionais sem metodologia pública. Recomendação: solicitar dados ABComm Regional ou Neotrust.", severity: "high" },
+  { area: "Faturamento por vertical", status: "Receita setorial, não de transporte", detail: "Valores como 'Agro R$ 380 bi' referem-se à receita total do setor, não ao gasto com transporte. Para precisão, seria necessário aplicar % de custo logístico por setor (ILOS).", severity: "high" },
+  { area: "ROI de TMS por vertical", status: "Estimativa qualitativa", detail: "Faixas de ROI (ex: 15-25%) são baseadas em benchmarks de mercado e casos de uso, não em estudo controlado. Recomendação: criar modelo com premissas editáveis.", severity: "medium" },
+  { area: "Série histórica de CT-e", status: "Dado agregado", detail: "Portal CT-e mostra total acumulado (22,2 bi) e emissores ativos (121,2 mil), mas não publica série anual. Estimativa de 1,5-2 bi/ano é derivada.", severity: "low" },
+  { area: "Custo de frete por UF", status: "Estimativa", detail: "Edenred IFR publica média nacional. Variação por UF é estimada com base em distância média e infraestrutura. Recomendação: buscar dados Edenred segmentados.", severity: "medium" },
+  { area: "Diesel histórico", status: "Disponível mas não coletado", detail: "ANP disponibiliza série semanal desde 2005. Dados não foram extraídos para esta versão. Próximo passo: automação de coleta via API ANP.", severity: "low" },
+  { area: "Número de transportadores", status: "Dado oficial com ressalva", detail: "RNTRC registra 1,2 mi, mas inclui inativos recentes e em recadastramento. Número real de operadores ativos pode ser 15-20% menor.", severity: "medium" },
+];
+
+// ═══════════════════════════════════════════
+// COMPONENTS
+// ═══════════════════════════════════════════
+
+const SourceBadge = ({ source, year, confidence }) => (
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10, color: COLORS.textDim, background: "rgba(59,130,246,0.08)", padding: "2px 8px", borderRadius: 4, fontFamily: "monospace" }}>
+    {source} · {year}
+    {confidence && <span style={{ width: 6, height: 6, borderRadius: "50%", background: confidence === "Alta" ? COLORS.green : confidence === "Média" ? COLORS.gold : COLORS.red, display: "inline-block" }} />}
+  </span>
+);
+
+const SectionTitle = ({ children, sub }) => (
+  <div style={{ marginBottom: 32 }}>
+    <h2 style={{ fontSize: 28, fontWeight: 700, color: COLORS.text, letterSpacing: "-0.02em", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{children}</h2>
+    {sub && <p style={{ fontSize: 14, color: COLORS.textDim, marginTop: 6, maxWidth: 700 }}>{sub}</p>}
+  </div>
+);
+
+const InsightBox = ({ children, type = "info" }) => {
+  const colors = { info: COLORS.accent, warning: COLORS.gold, critical: COLORS.red, positive: COLORS.green };
+  return (
+    <div style={{ background: `${colors[type]}11`, borderLeft: `3px solid ${colors[type]}`, padding: "12px 16px", borderRadius: "0 6px 6px 0", fontSize: 13, color: COLORS.textMuted, lineHeight: 1.6, marginTop: 12 }}>
+      {children}
+    </div>
+  );
+};
+
+const StatCard = ({ value, label, sub, delta, source, year }) => (
+  <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 6 }}>
+    <div style={{ fontSize: 26, fontWeight: 800, color: COLORS.text, fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "-0.03em" }}>{value}</div>
+    <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.textMuted }}>{label}</div>
+    {sub && <div style={{ fontSize: 11, color: COLORS.textDim }}>{sub}</div>}
+    {delta && <div style={{ fontSize: 11, color: delta > 0 ? COLORS.green : COLORS.red, fontWeight: 600 }}>{delta > 0 ? "+" : ""}{delta}%</div>}
+    <SourceBadge source={source} year={year} />
+  </div>
+);
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{ background: COLORS.tooltipBg, border: "1px solid " + COLORS.accent, borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#FFFFFF" }}>
+      <div style={{ fontWeight: 700, marginBottom: 6 }}>{label}</div>
+      {payload.map((p, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: p.color }} />
+          <span style={{ color: "#C4BDE8" }}>{p.name}:</span>
+          <span style={{ fontWeight: 600 }}>{typeof p.value === "number" ? p.value.toLocaleString("pt-BR") : p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════
+// MAIN DASHBOARD
+// ═══════════════════════════════════════════
+
+function Dashboard() {
+  const [activeSection, setActiveSection] = useState("panorama");
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedVertical, setSelectedVertical] = useState(null);
+  const [userInputs, setUserInputs] = useState({
+    entregas: 5000,
+    transportadoras: 10,
+    freteSpot: 30,
+    documentos: 15000,
+    usaTMS: false,
+    ocorrencias: 5,
+    pessoasOp: 8,
+  });
+
+  const sections = [
+    { id: "panorama", label: "Panorama" },
+    { id: "estados", label: "Por Estado" },
+    { id: "verticais", label: "Por Vertical" },
+    { id: "custos", label: "Custos & Pressão" },
+    { id: "documentos", label: "Jornada Documental" },
+    { id: "compare", label: "Compare sua Operação" },
+    { id: "lacunas", label: "Metodologia & Lacunas" },
+  ];
+
+  const renderNav = () => (
+    <nav style={{ display: "flex", gap: 4, overflowX: "auto", padding: "4px 0", marginBottom: 32 }}>
+      {sections.map((s) => (
+        <button key={s.id} onClick={() => setActiveSection(s.id)} style={{
+          padding: "8px 18px", borderRadius: 6, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600,
+          background: activeSection === s.id ? COLORS.accent : "transparent",
+          color: activeSection === s.id ? "#fff" : COLORS.textDim,
+          whiteSpace: "nowrap", transition: "all 0.2s",
+        }}>
+          {s.label}
+        </button>
+      ))}
+    </nav>
+  );
+
+  // ── PANORAMA ──
+  const renderPanorama = () => (
+    <div>
+      <SectionTitle sub="Números-chave que definem o tamanho, a fragmentação e a pressão do setor de transporte no Brasil.">Big Numbers do Setor</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14, marginBottom: 40 }}>
+        {BIG_NUMBERS.map((n) => (
+          <div key={n.id} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: 20, cursor: "pointer", transition: "border-color 0.2s" }}
+            onMouseEnter={(e) => e.currentTarget.style.borderColor = COLORS.accent}
+            onMouseLeave={(e) => e.currentTarget.style.borderColor = COLORS.border}>
+            <div style={{ fontSize: 28, fontWeight: 800, color: COLORS.text, fontFamily: "'Plus Jakarta Sans', sans-serif", letterSpacing: "-0.03em" }}>{n.value}</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.accentLight, marginTop: 4 }}>{n.label}</div>
+            <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 2 }}>{n.sub}</div>
+            <div style={{ marginTop: 8 }}><SourceBadge source={n.source} year={n.year} confidence={n.confidence} /></div>
+            <InsightBox>{n.note}</InsightBox>
+          </div>
+        ))}
+      </div>
+
+      <SectionTitle sub="E-commerce: volume de pedidos cresceu 47% em 5 anos, mas faturamento apenas 10% ao ano. Isso mostra compressão de margens.">E-Commerce: Volume vs Faturamento (2020-2025)</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 40 }}>
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Faturamento (R$ bi) vs Pedidos (mi)</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <ComposedChart data={ECOMMERCE_SERIES}>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+              <XAxis dataKey="year" stroke={COLORS.textDim} fontSize={11} />
+              <YAxis yAxisId="left" stroke={COLORS.textDim} fontSize={11} />
+              <YAxis yAxisId="right" orientation="right" stroke={COLORS.textDim} fontSize={11} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar yAxisId="left" dataKey="faturamento" fill={COLORS.accent} name="Faturamento (R$ bi)" radius={[4, 4, 0, 0]} />
+              <Line yAxisId="right" dataKey="pedidos" stroke={COLORS.gold} strokeWidth={3} name="Pedidos (mi)" dot={{ fill: COLORS.gold, r: 4 }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <InsightBox type="warning">Divergência crescente: volume subiu 47% enquanto receita subiu ~112% no mesmo período. Ticket médio caiu de R$ 500 (2023) para R$ 511 (2025) após queda para R$ 486 em 2024. Marketplace de baixo ticket (Shopee, Shein) puxa o volume para cima e a margem para baixo.</InsightBox>
+        </div>
+
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Ticket Médio (R$) — A margem que encolhe</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={ECOMMERCE_SERIES}>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+              <XAxis dataKey="year" stroke={COLORS.textDim} fontSize={11} />
+              <YAxis stroke={COLORS.textDim} fontSize={11} domain={[300, 550]} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area dataKey="ticketMedio" stroke={COLORS.purple} fill={`${COLORS.purple}22`} strokeWidth={2} name="Ticket Médio (R$)" dot={{ fill: COLORS.purple, r: 4 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+          <InsightBox>Ticket médio oscilou entre R$ 353 (2020) e R$ 511 (2025). Mas a queda de 2023→2024 (R$ 500→R$ 486) é o sinal de alerta: marketplaces de baixo ticket dominam o crescimento de volume.</InsightBox>
+        </div>
+      </div>
+
+      <SectionTitle sub="Distribuição de frota e transportadores por região. O Sudeste concentra 39% da frota, mas o Sul cresce mais rápido.">Distribuição Regional</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 40 }}>
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Frota de Caminhões por Região (mil)</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={REGIOES_DATA} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+              <XAxis type="number" stroke={COLORS.textDim} fontSize={11} />
+              <YAxis type="category" dataKey="regiao" stroke={COLORS.textDim} fontSize={11} width={90} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="frota" name="Frota (mil)" radius={[0, 4, 4, 0]}>
+                {REGIOES_DATA.map((d, i) => <Cell key={i} fill={REGION_COLORS[d.regiao]} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <InsightBox>Sudeste tem 923 mil caminhões (39% do total), mas crescimento de e-commerce é apenas 32% na média regional. Sul cresce 147%. Oportunidade está se deslocando.</InsightBox>
+        </div>
+
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Crescimento E-Commerce por Região (%)</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={REGIOES_DATA}>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+              <XAxis dataKey="regiao" stroke={COLORS.textDim} fontSize={10} />
+              <YAxis stroke={COLORS.textDim} fontSize={11} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="growth" name="Crescimento (%)" radius={[4, 4, 0, 0]}>
+                {REGIOES_DATA.map((d, i) => <Cell key={i} fill={REGION_COLORS[d.regiao]} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <InsightBox type="warning">Sul lidera com 147% de crescimento médio, puxado por SC (+279%) e RS (+150%). Essa explosão de demanda em regiões com infraestrutura logística menor cria gargalos operacionais severos.</InsightBox>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── ESTADOS ──
+  const renderEstados = () => {
+    const sorted = [...ESTADOS].sort((a, b) => b.frota - a.frota);
+    const sel = selectedState ? ESTADOS.find((e) => e.uf === selectedState) : null;
+
+    return (
+      <div>
+        <SectionTitle sub="Clique em um estado para ver a análise detalhada. Ordenado por frota de caminhões.">Raio-X por Estado</SectionTitle>
+
+        <div style={{ display: "grid", gridTemplateColumns: sel ? "1fr 1fr" : "1fr", gap: 20, marginBottom: 32 }}>
+          <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+            <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Top 16 Estados — Frota, Transportadores e E-Commerce</h3>
+            <ResponsiveContainer width="100%" height={500}>
+              <BarChart data={sorted} layout="vertical" onClick={(e) => e?.activeLabel && setSelectedState(sorted.find(s => s.nome === e.activeLabel)?.uf)}>
+                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+                <XAxis type="number" stroke={COLORS.textDim} fontSize={10} />
+                <YAxis type="category" dataKey="uf" stroke={COLORS.textDim} fontSize={11} width={30} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="frota" name="Frota (mil)" fill={COLORS.accent} radius={[0, 3, 3, 0]} />
+                <Bar dataKey="transp" name="Transportadores (mil)" fill={COLORS.purple} radius={[0, 3, 3, 0]} />
+                <Bar dataKey="ecomVol" name="E-Com Volume (mi)" fill={COLORS.gold} radius={[0, 3, 3, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {sel && (
+            <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: `1px solid ${COLORS.accent}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <div>
+                  <h3 style={{ fontSize: 22, fontWeight: 800, color: COLORS.text }}>{sel.nome} ({sel.uf})</h3>
+                  <span style={{ fontSize: 12, color: COLORS.textDim }}>{sel.regiao}</span>
+                </div>
+                <div style={{ background: `${COLORS.accent}22`, padding: "8px 14px", borderRadius: 8 }}>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: COLORS.accentLight }}>{sel.opp}</div>
+                  <div style={{ fontSize: 10, color: COLORS.textDim }}>Score TMS</div>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                <StatCard value={`${sel.frota}k`} label="Caminhões" source="SENATRAN" year="2024" />
+                <StatCard value={`${sel.transp}k`} label="Transportadores" source="ANTT" year="2025" />
+                <StatCard value={`${sel.ecomVol} mi`} label="Pedidos E-Com" source="ABComm" year="2025" />
+                <StatCard value={`+${sel.ecomGrowth}%`} label="Crescimento E-Com" source="ABComm" year="2025" />
+                <StatCard value={`R$ ${sel.custoFrete}`} label="Frete médio/km" source="Edenred" year="2026" />
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.textMuted, marginBottom: 8 }}>Principais verticais:</div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {sel.verticais.map((v) => (
+                    <span key={v} style={{ background: `${COLORS.accent}15`, color: COLORS.accentLight, padding: "4px 10px", borderRadius: 4, fontSize: 11 }}>{v}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.textMuted, marginBottom: 8 }}>Principais rotas:</div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {sel.rotas.map((r) => (
+                    <span key={r} style={{ background: `${COLORS.purple}15`, color: COLORS.purple, padding: "4px 10px", borderRadius: 4, fontSize: 11 }}>{r}</span>
+                  ))}
+                </div>
+              </div>
+
+              <InsightBox type={sel.opp >= 80 ? "critical" : sel.opp >= 60 ? "warning" : "info"}>
+                {sel.opp >= 80
+                  ? `${sel.nome} é um dos mercados mais críticos para TMS no Brasil. Alto volume, múltiplos parceiros e complexidade operacional elevada criam demanda imediata por automação e visibilidade.`
+                  : sel.opp >= 60
+                  ? `${sel.nome} apresenta oportunidade significativa, especialmente com crescimento de ${sel.ecomGrowth}% em e-commerce. A expansão de volume sem infraestrutura proporcional gera gargalos operacionais.`
+                  : `${sel.nome} é um mercado em desenvolvimento para TMS. Volume ainda moderado, mas crescimento consistente indica janela de oportunidade nos próximos 2-3 anos.`}
+              </InsightBox>
+
+              <button onClick={() => setSelectedState(null)} style={{ marginTop: 16, padding: "8px 16px", background: "transparent", border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.textDim, cursor: "pointer", fontSize: 12 }}>
+                Fechar painel
+              </button>
+            </div>
+          )}
+        </div>
+
+        <SectionTitle sub="Estados com maior crescimento de e-commerce representam mercados emergentes com infraestrutura logística ainda deficiente.">Crescimento E-Commerce por Estado — Os mercados que explodem</SectionTitle>
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}`, marginBottom: 40 }}>
+          <ResponsiveContainer width="100%" height={350}>
+            <ScatterChart>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+              <XAxis dataKey="frota" name="Frota (mil)" stroke={COLORS.textDim} fontSize={11} label={{ value: "Frota (mil caminhões)", position: "bottom", fill: COLORS.textDim, fontSize: 11 }} />
+              <YAxis dataKey="ecomGrowth" name="Crescimento (%)" stroke={COLORS.textDim} fontSize={11} label={{ value: "Crescimento E-Com (%)", angle: -90, position: "left", fill: COLORS.textDim, fontSize: 11 }} />
+              <Tooltip cursor={{ strokeDasharray: "3 3" }} content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0].payload;
+                return (
+                  <div style={{ background: COLORS.tooltipBg, border: "1px solid " + COLORS.accent, borderRadius: 8, padding: 12, fontSize: 12, color: "#FFFFFF" }}>
+                    <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.nome} ({d.uf})</div>
+                    <div>Frota: {d.frota}k · Crescimento: +{d.ecomGrowth}%</div>
+                    <div>Score TMS: {d.opp}</div>
+                  </div>
+                );
+              }} />
+              <Scatter data={ESTADOS} fill={COLORS.accent}>
+                {ESTADOS.map((e, i) => (
+                  <Cell key={i} fill={REGION_COLORS[e.regiao]} r={Math.max(6, e.opp / 8)} cursor="pointer" onClick={() => setSelectedState(e.uf)} />
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+          <InsightBox>Tamanho do ponto = score de oportunidade TMS. SC, ES e RS estão no quadrante de alto crescimento com frota moderada — mercados onde a demanda cresce mais rápido que a infraestrutura. SP domina em escala absoluta.</InsightBox>
+        </div>
+      </div>
+    );
+  };
+
+  // ── VERTICAIS ──
+  const renderVerticais = () => {
+    const sel = selectedVertical ? VERTICAIS.find((v) => v.id === selectedVertical) : null;
+
+    return (
+      <div>
+        <SectionTitle sub="Cada setor tem dinâmica logística própria. Clique para ver a análise completa com leitura de inteligência.">Raio-X por Vertical</SectionTitle>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10, marginBottom: 32 }}>
+          {VERTICAIS.map((v) => (
+            <button key={v.id} onClick={() => setSelectedVertical(v.id === selectedVertical ? null : v.id)} style={{
+              background: selectedVertical === v.id ? `${COLORS.accent}22` : COLORS.card,
+              border: `1px solid ${selectedVertical === v.id ? COLORS.accent : COLORS.border}`,
+              borderRadius: 10, padding: 16, cursor: "pointer", textAlign: "left", transition: "all 0.2s",
+            }}>
+              <div style={{ fontSize: 24, marginBottom: 6 }}>{v.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.text }}>{v.nome}</div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: COLORS.accentLight, marginTop: 4 }}>{v.oppScore}</div>
+              <div style={{ fontSize: 10, color: COLORS.textDim }}>Score TMS</div>
+            </button>
+          ))}
+        </div>
+
+        {sel && (
+          <div style={{ background: COLORS.card, borderRadius: 12, padding: 28, border: `1px solid ${COLORS.accent}`, marginBottom: 32 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
+              <div>
+                <h3 style={{ fontSize: 24, fontWeight: 800, color: COLORS.text }}>{sel.icon} {sel.nome}</h3>
+                <div style={{ fontSize: 12, color: COLORS.textDim, marginTop: 4 }}>Complexidade documental: <span style={{ color: sel.complexidade === "Crítica" ? COLORS.red : sel.complexidade === "Muito Alta" ? COLORS.gold : COLORS.accentLight, fontWeight: 700 }}>{sel.complexidade}</span></div>
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ textAlign: "center", background: `${COLORS.accent}15`, padding: "8px 14px", borderRadius: 8 }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: COLORS.accentLight }}>{sel.oppScore}</div>
+                  <div style={{ fontSize: 9, color: COLORS.textDim }}>Score TMS</div>
+                </div>
+                <div style={{ textAlign: "center", background: `${COLORS.green}15`, padding: "8px 14px", borderRadius: 8 }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: COLORS.green }}>{sel.roi}</div>
+                  <div style={{ fontSize: 9, color: COLORS.textDim }}>ROI estimado</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10, marginBottom: 24 }}>
+              <StatCard value={`R$ ${sel.fat} bi`} label="Faturamento setor" source="Múltiplas" year="2025" />
+              <StatCard value={`${sel.pedidos > 0 ? sel.pedidos + " mi" : "B2B"}`} label="Pedidos/ano" source="ABComm" year="2025" />
+              <StatCard value={`+${sel.crescimento}%`} label="Crescimento anual" source="ABComm" year="2025" />
+              <StatCard value={`${sel.toneladas} mi ton`} label="Volume frete" source="CNT" year="2025" />
+              <StatCard value={`${sel.transp}k`} label="Transportadores" source="ANTT" year="2025" />
+              <StatCard value={`${sel.sla} dias`} label="SLA médio" source="Estimativa" year="2025" />
+              <StatCard value={`${sel.entregas3d}%`} label="Entregas em 3 dias" source="ABComm" year="2025" />
+              <StatCard value={`${sel.docs} docs`} label="Docs por operação" source="Receita Federal" year="2025" />
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: COLORS.textMuted, marginBottom: 8 }}>Desafios críticos:</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {sel.desafios.map((d, i) => (
+                  <div key={i} style={{ fontSize: 12, color: COLORS.textDim, paddingLeft: 12, borderLeft: `2px solid ${COLORS.red}33` }}>{d}</div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ background: `${COLORS.accent}08`, borderRadius: 8, padding: 16, border: `1px solid ${COLORS.accent}22` }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.accentLight, marginBottom: 8 }}>📊 Leitura de Inteligência</div>
+              <div style={{ fontSize: 13, color: COLORS.textMuted, lineHeight: 1.7 }}>{sel.leitura}</div>
+            </div>
+
+            <button onClick={() => setSelectedVertical(null)} style={{ marginTop: 16, padding: "8px 16px", background: "transparent", border: `1px solid ${COLORS.border}`, borderRadius: 6, color: COLORS.textDim, cursor: "pointer", fontSize: 12 }}>
+              Fechar
+            </button>
+          </div>
+        )}
+
+        <SectionTitle sub="Comparação direta entre verticais: score TMS, complexidade, ROI e margem do transportador.">Matriz de Oportunidade TMS</SectionTitle>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 40 }}>
+          <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+            <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Score TMS por Vertical</h3>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={VERTICAIS} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+                <XAxis type="number" domain={[0, 100]} stroke={COLORS.textDim} fontSize={11} />
+                <YAxis type="category" dataKey="nome" stroke={COLORS.textDim} fontSize={10} width={100} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="oppScore" name="Score TMS" radius={[0, 4, 4, 0]}>
+                  {VERTICAIS.map((v, i) => <Cell key={i} fill={v.oppScore >= 85 ? COLORS.red : v.oppScore >= 70 ? COLORS.gold : COLORS.accent} />)}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <InsightBox type="critical">E-Commerce (95), Farmacêutica (92) e Alimentos (90) são os 3 setores com maior necessidade de TMS. O denominador comum: complexidade documental alta + margem comprimida + SLA curto.</InsightBox>
+          </div>
+
+          <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+            <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Docs por Operação vs Score TMS</h3>
+            <ResponsiveContainer width="100%" height={320}>
+              <ScatterChart>
+                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+                <XAxis dataKey="docs" name="Docs/operação" stroke={COLORS.textDim} fontSize={11} label={{ value: "Documentos por operação", position: "bottom", fill: COLORS.textDim, fontSize: 10 }} />
+                <YAxis dataKey="oppScore" name="Score TMS" stroke={COLORS.textDim} fontSize={11} domain={[40, 100]} label={{ value: "Score TMS", angle: -90, position: "left", fill: COLORS.textDim, fontSize: 10 }} />
+                <Tooltip content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const d = payload[0].payload;
+                  return (
+                    <div style={{ background: COLORS.tooltipBg, border: "1px solid " + COLORS.accent, borderRadius: 8, padding: 10, fontSize: 12, color: "#FFFFFF" }}>
+                      <div style={{ fontWeight: 700 }}>{d.nome}</div>
+                      <div>Docs: {d.docs} · Score: {d.oppScore} · ROI: {d.roi}</div>
+                    </div>
+                  );
+                }} />
+                <Scatter data={VERTICAIS}>
+                  {VERTICAIS.map((v, i) => <Cell key={i} fill={v.oppScore >= 85 ? COLORS.red : COLORS.accent} r={Math.max(8, v.fat / 30)} />)}
+                </Scatter>
+              </ScatterChart>
+            </ResponsiveContainer>
+            <InsightBox>Correlação clara: quanto mais documentos por operação, maior o score TMS. Combustíveis (10 docs) e Farmacêutica (9 docs) são os mais burocráticos. Tamanho do ponto = faturamento do setor.</InsightBox>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── CUSTOS ──
+  const renderCustos = () => (
+    <div>
+      <SectionTitle sub="Diesel, pedágio, manutenção e retrabalho documental: onde o dinheiro vai.">Por que a logística fica cara?</SectionTitle>
+
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 32 }}>
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Frete (R$/km) vs Diesel (R$/L) — Correlação direta</h3>
+          <ResponsiveContainer width="100%" height={320}>
+            <ComposedChart data={FRETE_DIESEL}>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+              <XAxis dataKey="period" stroke={COLORS.textDim} fontSize={10} />
+              <YAxis yAxisId="left" stroke={COLORS.textDim} fontSize={11} domain={[5.5, 8.5]} />
+              <YAxis yAxisId="right" orientation="right" stroke={COLORS.textDim} fontSize={11} domain={[5, 8]} />
+              <Tooltip content={<CustomTooltip />} />
+              <Line yAxisId="left" dataKey="frete" stroke={COLORS.accent} strokeWidth={3} name="Frete (R$/km)" dot={{ fill: COLORS.accent, r: 4 }} />
+              <Line yAxisId="right" dataKey="diesel" stroke={COLORS.red} strokeWidth={3} name="Diesel (R$/L)" dot={{ fill: COLORS.red, r: 4 }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+          <InsightBox type="critical">Frete e diesel sobem juntos. De 2024 a março/2026, frete subiu 22,9% (R$ 6,50→R$ 7,99) e diesel 26,7% (R$ 5,80→R$ 7,35). A guerra no Irã (mar/2026) acelerou o diesel em 8,1% em um único mês.</InsightBox>
+          <div style={{ marginTop: 12 }}><SourceBadge source="Edenred IFR + ANP" year="2024-2026" confidence="Alta" /></div>
+        </div>
+
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Composição do Custo de Frete</h3>
+          <ResponsiveContainer width="100%" height={320}>
+            <PieChart>
+              <Pie data={CUSTO_COMPOSICAO} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, value }) => `${name} ${value}%`} labelLine={false} style={{ fontSize: 10 }}>
+                {CUSTO_COMPOSICAO.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <InsightBox>Combustível (32%) + Pedágio (13%) = 45% do custo total. São os itens mais voláteis e menos controlados sem auditoria automatizada.</InsightBox>
+          <div style={{ marginTop: 8 }}><SourceBadge source="Análise setorial" year="2025" confidence="Média" /></div>
+        </div>
+      </div>
+
+      <SectionTitle sub="A cadeia de pressão que torna cada real de frete mais caro.">Cadeia de Pressão — 9 fatores que encarecem a logística</SectionTitle>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12, marginBottom: 40 }}>
+        {[
+          { title: "Dependência rodoviária", desc: "95% do transporte de cargas é rodoviário. Sem alternativa modal competitiva, qualquer aumento de diesel impacta toda a cadeia.", icon: "🛣️", severity: "critical" },
+          { title: "Rodovias com problemas", desc: "Apenas 21% da malha federal pavimentada é concedida. Estradas ruins aumentam manutenção, pneus e tempo de viagem.", icon: "🚧", severity: "warning" },
+          { title: "Diesel e pedágio", desc: "Diesel subiu 26,7% em 18 meses. Pedágio representa 13% do custo. Juntos, 45% do frete é composto por itens voláteis.", icon: "⛽", severity: "critical" },
+          { title: "Frete spot sem controle", desc: "Transportadoras pequenas operam com frete spot negociado por telefone, sem benchmark. Diferenças de até 30% entre cotações similares.", icon: "📞", severity: "warning" },
+          { title: "Ocorrências não rastreadas", desc: "Devoluções, avarias e extravios sem registro sistemático. Sem dados, não há como cobrar transportadora ou melhorar processos.", icon: "⚠️", severity: "warning" },
+          { title: "Retrabalho documental", desc: "5-8 documentos por operação, majoritariamente manuais. Erros de digitação geram rejeição fiscal e retrabalho de horas.", icon: "📄", severity: "critical" },
+          { title: "Falta de integração", desc: "ERP, WMS, TMS, rastreador e planilha não conversam. Dados ficam em silos. Decisão operacional é baseada em feeling, não em dados.", icon: "🔌", severity: "warning" },
+          { title: "Auditoria manual", desc: "Conferência de frete vs. tabela contratada feita manualmente. Cobranças indevidas passam despercebidas. Economia típica: 5-10% do gasto.", icon: "🔍", severity: "warning" },
+          { title: "Baixa visibilidade", desc: "Embarcador não sabe onde a carga está em tempo real. Transportadora não tem SLA mensurado. Ocorrência vira surpresa.", icon: "👁️", severity: "info" },
+        ].map((item, i) => (
+          <div key={i} style={{ background: COLORS.card, borderRadius: 8, padding: 16, border: `1px solid ${COLORS.border}`, borderLeft: `3px solid ${item.severity === "critical" ? COLORS.red : item.severity === "warning" ? COLORS.gold : COLORS.accent}` }}>
+            <div style={{ fontSize: 20, marginBottom: 8 }}>{item.icon}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.text, marginBottom: 6 }}>{item.title}</div>
+            <div style={{ fontSize: 12, color: COLORS.textDim, lineHeight: 1.6 }}>{item.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ── DOCUMENTOS ──
+  const renderDocumentos = () => (
+    <div>
+      <SectionTitle sub="Uma operação simples de transporte gera 5-8 documentos fiscais. Com 440 milhões de pedidos/ano, são 2,2-3,5 bilhões de documentos anuais.">Jornada Documental — Do pedido ao pagamento</SectionTitle>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 40 }}>
+        {DOC_JOURNEY.map((step, i) => (
+          <div key={i} style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}`, display: "grid", gridTemplateColumns: "40px 1fr 1fr 1fr 1fr", gap: 16, alignItems: "center" }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: `${COLORS.accent}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: COLORS.accentLight }}>
+              {step.step}
+            </div>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text }}>{step.name}</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>{step.doc}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.red, marginBottom: 2 }}>Risco</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>{step.risk}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.green, marginBottom: 2 }}>Automação possível</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>{step.auto}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: COLORS.accentLight, marginBottom: 2 }}>Papel do TMS</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim }}>{step.tms}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <InsightBox type="critical">
+        São 10 etapas, cada uma com documentos, riscos e integrações. Uma empresa com 5.000 entregas/mês gera ~40.000 documentos/mês. Sem automação, são centenas de horas de trabalho manual, erros de digitação, rejeições fiscais e pagamentos indevidos. O TMS não é software — é a infraestrutura mínima para operar sem sangrar.
+      </InsightBox>
+    </div>
+  );
+
+  // ── COMPARE SUA OPERAÇÃO ──
+  const safeNum = (val) => { const n = Number(val); return isNaN(n) ? 0 : n; };
+
+  const handleInput = (field, rawVal) => {
+    if (field === "usaTMS") {
+      setUserInputs((prev) => ({ ...prev, usaTMS: rawVal }));
+    } else {
+      setUserInputs((prev) => ({ ...prev, [field]: rawVal === "" ? "" : safeNum(rawVal) }));
+    }
+  };
+
+  const renderCompare = () => {
+    const entregas = safeNum(userInputs.entregas);
+    const transportadoras = safeNum(userInputs.transportadoras);
+    const freteSpot = safeNum(userInputs.freteSpot);
+    const documentos = safeNum(userInputs.documentos);
+    const ocorrencias = safeNum(userInputs.ocorrencias);
+    const pessoasOp = safeNum(userInputs.pessoasOp);
+    const usaTMS = userInputs.usaTMS;
+
+    const docsEstimado = entregas * 6;
+    const horasManualMes = usaTMS ? (documentos * 0.5) / 60 : (documentos * 3) / 60;
+    const potencialEconomia = !usaTMS ? entregas * 2.8 : entregas * 0.8;
+
+    // Complexity score — each factor normalized 0→1, then weighted (sum of weights = 100)
+    const fVolume = entregas > 0 ? Math.min(1, Math.log(1 + entregas) / Math.log(1 + 50000)) : 0;   // log scale, ceiling 50k
+    const fFrag = Math.min(1, transportadoras / 50);                                                   // linear, ceiling 50
+    const fSpot = Math.min(1, freteSpot / 100);                                                        // direct %
+    const fOcorr = Math.min(1, ocorrencias / 20);                                                      // ceiling 20%
+    const fEquipe = Math.min(1, pessoasOp / 25);                                                       // ceiling 25 pessoas
+    const fSemTMS = usaTMS ? 0 : 1;                                                                    // binary
+
+    const complexityScore = Math.max(0, Math.min(100, Math.round(
+      fVolume * 20 +     // peso 20: volume de operações
+      fFrag * 15 +       // peso 15: fragmentação de parceiros
+      fSpot * 15 +       // peso 15: exposição a frete spot
+      fOcorr * 20 +      // peso 20: taxa de problemas
+      fEquipe * 10 +     // peso 10: tamanho da equipe
+      fSemTMS * 20       // peso 20: ausência de TMS
+    )));
+    // Calibragem: 500 entregas, 3 transp, 10% spot, com TMS → ~17
+    //             5.000 entregas, 10 transp, 30% spot, sem TMS → ~51
+    //             30.000 entregas, 40 transp, 60% spot, sem TMS → ~80
+
+    const maturityLevel = usaTMS
+      ? (complexityScore < 25 ? 4 : complexityScore < 50 ? 3 : 2)
+      : (complexityScore < 35 ? 2 : 1);
+
+    const maturityLabels = {
+      1: { label: "Operação Manual", color: COLORS.red, desc: "Sem TMS e complexidade elevada. Documentos manuais, sem visibilidade em tempo real, sem auditoria automatizada. Risco operacional e financeiro alto." },
+      2: { label: "Operação Controlada", color: COLORS.gold, desc: "Algum nível de controle, mas com lacunas. Planilhas, processos semi-manuais, visibilidade parcial. Próximo passo: centralizar e automatizar." },
+      3: { label: "Operação Integrada", color: COLORS.accentLight, desc: "TMS em uso, complexidade gerenciável. Integração com ERP parcial ou completa. Oportunidade de otimização via dados e automação avançada." },
+      4: { label: "Operação Analítica", color: COLORS.green, desc: "TMS integrado, operação enxuta. Dados disponíveis para decisão. Próximo passo: IA, predição de demanda e automação inteligente." },
+    };
+
+    const mat = maturityLabels[maturityLevel];
+
+    // Comparison bar data — your operation vs market benchmark
+    const comparisonBars = [
+      { metric: "Entregas/mês", voce: Math.min(100, (entregas / 10000) * 100), mercado: 50, raw: entregas.toLocaleString("pt-BR"), ref: "~5.000 (média embarcador médio)" },
+      { metric: "Transportadoras", voce: Math.min(100, (transportadoras / 20) * 100), mercado: 50, raw: String(transportadoras), ref: "~10 (média mercado)" },
+      { metric: "Frete Spot %", voce: Math.min(100, freteSpot), mercado: 40, raw: freteSpot + "%", ref: "~40% (média mercado)" },
+      { metric: "Ocorrências %", voce: Math.min(100, ocorrencias * 10), mercado: 30, raw: ocorrencias + "%", ref: "~3% (benchmark)" },
+      { metric: "Equipe (pessoas)", voce: Math.min(100, (pessoasOp / 15) * 100), mercado: 50, raw: String(pessoasOp), ref: "~8 (média)" },
+      { metric: "Docs/mês", voce: Math.min(100, (documentos / 50000) * 100), mercado: 40, raw: documentos.toLocaleString("pt-BR"), ref: "~30.000 (média)" },
+    ];
+
+    const inputStyle = { width: "100%", padding: "10px 12px", background: COLORS.inputBg, border: "1px solid " + COLORS.border, borderRadius: 6, color: COLORS.text, fontSize: 14, outline: "none" };
+    const labelStyle = { fontSize: 12, fontWeight: 600, color: COLORS.textMuted, marginBottom: 4, display: "block" };
+
+    const CompareBar = ({ label, yourPct, marketPct, yourRaw, marketRef }) => {
+      const yp = Math.max(0, Math.min(100, yourPct || 0));
+      const mp = Math.max(0, Math.min(100, marketPct || 0));
+      return (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: COLORS.textMuted }}>{label}</span>
+            <span style={{ fontSize: 11, color: COLORS.textDim }}>Você: <strong style={{ color: COLORS.text }}>{yourRaw}</strong> · Mercado: {marketRef}</span>
+          </div>
+          <div style={{ position: "relative", height: 20, background: COLORS.inputBg, borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 0, left: 0, height: "100%", width: mp + "%", background: COLORS.gold + "44", borderRadius: 4, transition: "width 0.5s ease" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, height: "100%", width: yp + "%", background: yp > mp ? COLORS.red + "cc" : COLORS.accent + "cc", borderRadius: 4, transition: "width 0.5s ease" }} />
+            <div style={{ position: "absolute", top: 0, left: mp + "%", width: 2, height: "100%", background: COLORS.gold, zIndex: 2 }} />
+          </div>
+          <div style={{ display: "flex", gap: 12, marginTop: 3, fontSize: 10 }}>
+            <span style={{ color: yp > mp ? COLORS.red : COLORS.accent }}>■ Sua operação</span>
+            <span style={{ color: COLORS.gold }}>│ Média mercado</span>
+            {yp > mp * 1.3 && <span style={{ color: COLORS.red, fontWeight: 600 }}>⚠ Acima do benchmark</span>}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div>
+        <SectionTitle sub="Coloque os dados da sua operação e veja como ela se compara com as médias do mercado brasileiro. Todos os cálculos são em tempo real.">Compare sua Operação com o Mercado</SectionTitle>
+
+        <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: 24, marginBottom: 40 }}>
+          {/* LEFT: Inputs */}
+          <div style={{ background: COLORS.card, borderRadius: 12, padding: 24, border: "1px solid " + COLORS.border }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginBottom: 20 }}>Dados da sua operação</h3>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {[
+                { key: "entregas", label: "Entregas por mês", placeholder: "Ex: 5000" },
+                { key: "transportadoras", label: "Transportadoras ativas", placeholder: "Ex: 10" },
+                { key: "freteSpot", label: "% Frete spot", placeholder: "Ex: 30", min: 0, max: 100 },
+                { key: "documentos", label: "Documentos emitidos/mês", placeholder: "Ex: 15000" },
+                { key: "ocorrencias", label: "% de ocorrências", placeholder: "Ex: 5", min: 0, max: 100 },
+                { key: "pessoasOp", label: "Pessoas na operação", placeholder: "Ex: 8" },
+              ].map((field) => (
+                <div key={field.key}>
+                  <label style={labelStyle}>{field.label}</label>
+                  <input
+                    type="number"
+                    value={userInputs[field.key]}
+                    placeholder={field.placeholder}
+                    min={field.min}
+                    max={field.max}
+                    onChange={(e) => handleInput(field.key, e.target.value)}
+                    style={inputStyle}
+                    onFocus={(e) => e.target.style.borderColor = COLORS.accent}
+                    onBlur={(e) => e.target.style.borderColor = COLORS.border}
+                  />
+                </div>
+              ))}
+              <div>
+                <label style={labelStyle}>Usa TMS hoje?</label>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {[true, false].map((val) => (
+                    <button key={String(val)} onClick={() => handleInput("usaTMS", val)} style={{
+                      flex: 1, padding: 10, borderRadius: 6, cursor: "pointer", fontWeight: 600, fontSize: 13,
+                      border: "1px solid " + (usaTMS === val ? (val ? COLORS.green : COLORS.red) : COLORS.border),
+                      background: usaTMS === val ? (val ? COLORS.green + "22" : COLORS.red + "22") : "transparent",
+                      color: usaTMS === val ? (val ? COLORS.green : COLORS.red) : COLORS.textDim,
+                    }}>
+                      {val ? "Sim" : "Não"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: Results */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Score + Maturity */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: "2px solid " + mat.color, textAlign: "center" }}>
+                <div style={{ fontSize: 56, fontWeight: 800, color: mat.color, lineHeight: 1 }}>{complexityScore}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.text, marginTop: 8 }}>Score de Complexidade</div>
+                <div style={{ fontSize: 11, color: COLORS.textDim, marginTop: 4 }}>0 = simples · 100 = crítico</div>
+                <div style={{ marginTop: 12, height: 6, background: COLORS.inputBg, borderRadius: 3, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: complexityScore + "%", background: mat.color, borderRadius: 3, transition: "width 0.5s ease" }} />
+                </div>
+              </div>
+              <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: "1px solid " + mat.color }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: COLORS.textDim, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Diagnóstico</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: mat.color, marginBottom: 8 }}>Nível {maturityLevel}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.text, marginBottom: 8 }}>{mat.label}</div>
+                <div style={{ fontSize: 12, color: COLORS.textDim, lineHeight: 1.6 }}>{mat.desc}</div>
+              </div>
+            </div>
+
+            {/* Factor Breakdown */}
+            <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: "1px solid " + COLORS.border }}>
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: COLORS.textMuted, marginBottom: 14 }}>O que compõe o score — contribuição de cada fator</h3>
+              {[
+                { label: "Volume de operações", raw: entregas.toLocaleString("pt-BR") + " entregas", pct: fVolume, weight: 20, points: Math.round(fVolume * 20) },
+                { label: "Fragmentação (transportadoras)", raw: transportadoras + " parceiros", pct: fFrag, weight: 15, points: Math.round(fFrag * 15) },
+                { label: "Exposição a frete spot", raw: freteSpot + "%", pct: fSpot, weight: 15, points: Math.round(fSpot * 15) },
+                { label: "Taxa de ocorrências", raw: ocorrencias + "%", pct: fOcorr, weight: 20, points: Math.round(fOcorr * 20) },
+                { label: "Tamanho da equipe", raw: pessoasOp + " pessoas", pct: fEquipe, weight: 10, points: Math.round(fEquipe * 10) },
+                { label: "Ausência de TMS", raw: usaTMS ? "Usa TMS" : "Sem TMS", pct: fSemTMS, weight: 20, points: Math.round(fSemTMS * 20) },
+              ].map((f, i) => (
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "180px 100px 1fr 50px", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, color: COLORS.textMuted }}>{f.label}</span>
+                  <span style={{ fontSize: 11, color: COLORS.textDim }}>{f.raw}</span>
+                  <div style={{ height: 8, background: COLORS.inputBg, borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ height: "100%", width: (f.pct * 100) + "%", background: f.pct > 0.6 ? COLORS.red : f.pct > 0.3 ? COLORS.gold : COLORS.accent, borderRadius: 4, transition: "width 0.4s ease" }} />
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: f.points >= f.weight * 0.6 ? COLORS.red : f.points >= f.weight * 0.3 ? COLORS.gold : COLORS.green, textAlign: "right" }}>+{f.points}</span>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8, paddingTop: 8, borderTop: "1px solid " + COLORS.border }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: mat.color }}>Total: {complexityScore} / 100</span>
+              </div>
+            </div>
+
+            {/* Comparison Bars */}
+            <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: "1px solid " + COLORS.border }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: COLORS.textMuted, marginBottom: 20 }}>Sua Operação vs Média do Mercado</h3>
+              {comparisonBars.map((bar, i) => (
+                <CompareBar key={i} label={bar.metric} yourPct={bar.voce} marketPct={bar.mercado} yourRaw={bar.raw} marketRef={bar.ref} />
+              ))}
+            </div>
+
+            {/* Calculated Outputs */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+              <div style={{ background: COLORS.card, borderRadius: 8, padding: 16, border: "1px solid " + COLORS.border, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: COLORS.gold }}>{docsEstimado.toLocaleString("pt-BR")}</div>
+                <div style={{ fontSize: 11, color: COLORS.textDim, marginTop: 4 }}>Docs estimados/mês</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>({entregas.toLocaleString("pt-BR")} × 6 docs)</div>
+              </div>
+              <div style={{ background: COLORS.card, borderRadius: 8, padding: 16, border: "1px solid " + COLORS.border, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: COLORS.red }}>{Math.round(horasManualMes).toLocaleString("pt-BR")}h</div>
+                <div style={{ fontSize: 11, color: COLORS.textDim, marginTop: 4 }}>Horas processamento/mês</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>{usaTMS ? "0,5" : "3"} min/doc estimado</div>
+              </div>
+              <div style={{ background: COLORS.card, borderRadius: 8, padding: 16, border: "1px solid " + COLORS.border, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: COLORS.green }}>R$ {Math.round(potencialEconomia).toLocaleString("pt-BR")}</div>
+                <div style={{ fontSize: 11, color: COLORS.textDim, marginTop: 4 }}>Economia potencial/mês</div>
+                <div style={{ fontSize: 10, color: COLORS.textDim }}>estimativa conservadora</div>
+              </div>
+            </div>
+
+            {/* Insight */}
+            <InsightBox type={!usaTMS ? "critical" : "info"}>
+              {!usaTMS
+                ? "Sem TMS, sua operação de " + entregas.toLocaleString("pt-BR") + " entregas/mês gera ~" + docsEstimado.toLocaleString("pt-BR") + " documentos processados manualmente. São ~" + Math.round(horasManualMes).toLocaleString("pt-BR") + " horas/mês de trabalho que poderiam ser automatizadas. Com " + freteSpot + "% de frete spot, a auditoria manual está deixando passar cobranças indevidas. Todas as premissas são editáveis nos campos ao lado."
+                : "Sua operação já usa TMS, mas com score de complexidade " + complexityScore + ", ainda há espaço para otimização. Com " + transportadoras + " transportadoras e " + freteSpot + "% de frete spot, a auditoria e o controle de SLA são os pontos de maior ganho."}
+            </InsightBox>
+
+            <div style={{ fontSize: 11, color: COLORS.textDim, padding: "8px 12px", background: COLORS.gold + "0a", borderRadius: 6, border: "1px solid " + COLORS.gold + "22" }}>
+              <strong style={{ color: COLORS.gold }}>Premissas:</strong> Docs estimados = entregas × 6 (NF-e + CT-e + MDF-e + CIOT + comprovante + auditoria). Tempo por doc: 3 min (manual) ou 0,5 min (TMS). Economia = entregas × R$ 2,80 (sem TMS) ou R$ 0,80 (com TMS). Valores são estimativas e podem ser ajustados.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── LACUNAS ──
+  const renderLacunas = () => (
+    <div>
+      <SectionTitle sub="Transparência sobre o que sabemos, o que estimamos e onde os dados precisam ser fortalecidos.">Metodologia, Fontes e Lacunas</SectionTitle>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 32 }}>
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginBottom: 16 }}>Fontes Utilizadas</h3>
+          {[
+            { name: "ANTT/RNTRC", type: "Governo Federal", url: "gov.br/antt", data: "Transportadores, concessões, frota registrada", year: "2024/2025" },
+            { name: "ABComm", type: "Associação setorial", url: "abcomm.org", data: "E-commerce: faturamento, pedidos, crescimento", year: "2025" },
+            { name: "Edenred IFR", type: "Privada (índice público)", url: "edenred.com.br", data: "Índice de Frete Rodoviário", year: "2024-2026" },
+            { name: "ANP", type: "Governo Federal", url: "gov.br/anp", data: "Preço de diesel", year: "2024-2026" },
+            { name: "Receita Federal / Portal CT-e", type: "Governo Federal", url: "cte.fazenda.gov.br", data: "CT-e emitidos, emissores ativos", year: "2007-2026" },
+            { name: "SENATRAN", type: "Governo Federal", url: "gov.br/senatran", data: "Frota de veículos por tipo", year: "2024" },
+            { name: "CNT", type: "Confederação", url: "cnt.org.br", data: "Condição de rodovias, custos de transporte", year: "2025" },
+          ].map((s, i) => (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "10px 0", borderBottom: `1px solid ${COLORS.border}`, fontSize: 12 }}>
+              <div>
+                <div style={{ fontWeight: 600, color: COLORS.text }}>{s.name}</div>
+                <div style={{ color: COLORS.textDim }}>{s.data}</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ color: COLORS.textDim }}>{s.type}</div>
+                <div style={{ color: COLORS.accentLight }}>{s.year}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: `1px solid ${COLORS.border}` }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginBottom: 16 }}>Lacunas Identificadas</h3>
+          {GAPS_ANALYSIS.map((g, i) => (
+            <div key={i} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${COLORS.border}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: COLORS.text }}>{g.area}</span>
+                <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, fontWeight: 600, background: g.severity === "high" ? `${COLORS.red}22` : g.severity === "medium" ? `${COLORS.gold}22` : `${COLORS.green}22`, color: g.severity === "high" ? COLORS.red : g.severity === "medium" ? COLORS.gold : COLORS.green }}>
+                  {g.status}
+                </span>
+              </div>
+              <div style={{ fontSize: 11, color: COLORS.textDim, lineHeight: 1.5 }}>{g.detail}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: COLORS.card, borderRadius: 10, padding: 24, border: `1px solid ${COLORS.border}`, marginBottom: 32 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: COLORS.text, marginBottom: 16 }}>Como tornar esta análise mais robusta — Próximos passos</h3>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+          {[
+            { title: "Série SENATRAN por UF", desc: "Extrair frota mensal por estado diretamente do SENATRAN. Substituiria estimativas por dados oficiais.", effort: "Baixo", impact: "Alto" },
+            { title: "RNTRC série histórica", desc: "Extrair registros mensais de transportadores (2015-2026) do portal ANTT open data.", effort: "Médio", impact: "Alto" },
+            { title: "CT-e série anual", desc: "Solicitar à Receita Federal ou estimar via emissores ativos × média de emissão.", effort: "Médio", impact: "Médio" },
+            { title: "Diesel ANP semanal", desc: "Automatizar coleta da série semanal de preços de diesel via API/scraping da ANP.", effort: "Baixo", impact: "Médio" },
+            { title: "% custo logístico por setor (ILOS)", desc: "Obter dados do ILOS para converter receita setorial em gasto com transporte.", effort: "Alto", impact: "Alto" },
+            { title: "E-commerce por UF (Neotrust)", desc: "Solicitar dados regionais da Neotrust ou Ebit|Nielsen para substituir estimativas.", effort: "Médio", impact: "Alto" },
+          ].map((item, i) => (
+            <div key={i} style={{ background: `${COLORS.accent}08`, borderRadius: 8, padding: 14 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.text, marginBottom: 6 }}>{item.title}</div>
+              <div style={{ fontSize: 11, color: COLORS.textDim, marginBottom: 8, lineHeight: 1.5 }}>{item.desc}</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 3, background: `${COLORS.accent}22`, color: COLORS.accentLight }}>Esforço: {item.effort}</span>
+                <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 3, background: `${COLORS.green}22`, color: COLORS.green }}>Impacto: {item.impact}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: `${COLORS.gold}08`, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.gold}33`, fontSize: 12, color: COLORS.textMuted, lineHeight: 1.7 }}>
+        <strong style={{ color: COLORS.gold }}>Disclaimer:</strong> Esta análise utiliza dados públicos agregados e estimativas metodológicas. Valores por estado e por vertical incluem projeções baseadas em proporções regionais. ROI de TMS são faixas baseadas em benchmarks de mercado, não em estudo controlado. Para decisões de investimento, recomenda-se validação com dados primários. Última atualização: abril de 2026.
+      </div>
+    </div>
+  );
+
+  // ── MAIN RENDER ──
+  return (
+    <div style={{ background: COLORS.bg, minHeight: "100vh", color: COLORS.text, fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif" }}>
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+      {/* HERO */}
+      <div style={{ padding: "48px 32px 32px", maxWidth: 1280, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+          <svg width="26" height="30" viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M26 0L52 15V45L26 60L0 45V15L26 0Z" fill="#F472B6"/>
+            <path d="M26 0L52 15L26 30L0 15L26 0Z" fill="#FBCFE8"/>
+            <path d="M26 30L52 15V45L26 60V30Z" fill="#DB2777"/>
+            <path d="M26 30L0 15V45L26 60V30Z" fill="#EC4899"/>
+          </svg>
+          <span style={{ fontSize: 18, fontWeight: 800, color: COLORS.text, letterSpacing: "-0.03em" }}>emiteaí</span>
+          <span style={{ fontSize: 11, fontWeight: 600, color: COLORS.pink, textTransform: "uppercase", letterSpacing: "0.08em", padding: "3px 10px", background: COLORS.pink + "15", borderRadius: 4, marginLeft: 4 }}>Inteligência de Mercado</span>
+        </div>
+        <h1 style={{ fontSize: 38, fontWeight: 800, color: COLORS.text, lineHeight: 1.15, letterSpacing: "-0.03em", maxWidth: 800, marginBottom: 12 }}>
+          Raio-X da Logística Brasileira
+        </h1>
+        <p style={{ fontSize: 15, color: COLORS.textDim, maxWidth: 700, lineHeight: 1.7, marginBottom: 8 }}>
+          Dados públicos sobre frota, transportadores, e-commerce, custos de frete, complexidade documental e oportunidade de digitalização por estado e vertical.
+        </p>
+        <p style={{ fontSize: 12, color: COLORS.textDim }}>
+          Fontes: ANTT · ABComm · Edenred IFR · ANP · Receita Federal · SENATRAN · CNT &nbsp;|&nbsp; Atualizado em abril de 2026
+        </p>
+      </div>
+
+      {/* NAV + CONTENT */}
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px 64px" }}>
+        {renderNav()}
+
+        {activeSection === "panorama" && renderPanorama()}
+        {activeSection === "estados" && renderEstados()}
+        {activeSection === "verticais" && renderVerticais()}
+        {activeSection === "custos" && renderCustos()}
+        {activeSection === "documentos" && renderDocumentos()}
+        {activeSection === "compare" && renderCompare()}
+        {activeSection === "lacunas" && renderLacunas()}
+      </div>
+
+      {/* CTA */}
+      <div style={{ background: "linear-gradient(135deg, #1E1B4B 0%, #4338CA 50%, #7C3AED 100%)", padding: "56px 32px", textAlign: "center" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <img src={LOGO_WHITE} alt="emiteaí" style={{ height: 44, marginBottom: 16, mixBlendMode: "screen" }} />
+          <h2 style={{ fontSize: 24, fontWeight: 800, color: "#FFFFFF", marginBottom: 12 }}>Quer entender onde sua operação está perdendo visibilidade, tempo e margem?</h2>
+          <p style={{ fontSize: 14, color: "#C4BDE8", marginBottom: 24, lineHeight: 1.7 }}>
+            Use os dados do mercado como ponto de partida. Receba um diagnóstico aplicado à sua operação de transporte.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <button style={{ padding: "14px 32px", background: "#F472B6", color: "#1E1B4B", border: "none", borderRadius: 24, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+              Solicitar diagnóstico
+            </button>
+            <button style={{ padding: "14px 32px", background: "transparent", color: "#FFFFFF", border: "2px solid rgba(255,255,255,0.3)", borderRadius: 24, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+              Falar com especialista
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div style={{ padding: "24px 32px", textAlign: "center", fontSize: 11, color: COLORS.textDim, borderTop: "1px solid " + COLORS.border }}>
+        Dados públicos agregados · Estimativas metodológicas sinalizadas · Não constitui recomendação de investimento<br />
+        © 2026 Emiteaí — Plataforma de Gestão de Transporte · emiteai.com.br
+      </div>
+    </div>
+  );
+}
+
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(Dashboard));
+    </script>
+</body>
+</html>
