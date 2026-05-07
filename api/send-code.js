@@ -37,7 +37,7 @@ export default async function handler(req, res) {
   <tr><td style="background:linear-gradient(135deg,#1E1B4B 0%,#4338CA 100%);padding:36px 32px;border-radius:16px 16px 0 0;text-align:center">
     <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
       <!-- Pink cube icon -->
-      <div style="width:48px;height:48px;margin:0 auto 16px;background:#F472B6;border-radius:10px;transform:rotate(45deg)"></div>
+      <img src="https://em-dd-lg.vercel.app/logo-emiteai.png" alt="emiteaí" width="120" style="margin:0 auto 16px;display:block" />
       <h1 style="color:#FFFFFF;font-size:20px;font-weight:800;margin:0;letter-spacing:-0.02em">Raio-X da Logística Brasileira</h1>
       <p style="color:#C4BDE8;font-size:13px;margin:8px 0 0;font-weight:500">Seu código de acesso exclusivo</p>
     </td></tr></table>
