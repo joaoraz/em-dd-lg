@@ -253,22 +253,21 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
 
     btn.textContent = 'Enviando código por e-mail...';
 
-    // Envia email direto via Resend (protótipo — em produção mover para backend)
-    var firstName = nome.split(' ')[0];
-fetch('/api/send-code', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        nome: nome, empresa: empresa, email: email,
-        cargo: cargo, telefone: telefone, segmento: segmento,
-        entregas: entregas, code: code
+    // Envia email via serverless function (Vercel)
+    fetch('/api/send-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            nome: nome, empresa: empresa, email: email,
+            cargo: cargo, telefone: telefone, segmento: segmento,
+            entregas: entregas, code: code
+        })
     })
-})
-.then(function(res) { return res.json(); })
-.then(function(data) { console.log('Email sent:', data); })
-.catch(function(e) { console.warn('Email error (non-blocking):', e); });
+    .then(function(res) { return res.json(); })
+    .then(function(data) { console.log('Email sent:', data); })
+    .catch(function(e) { console.warn('Email error (non-blocking):', e); });
 
-    // Redireciona para obrigado (espera um pouco pro email disparar)
+    // Redireciona para obrigado
     setTimeout(function() {
         window.location.href = 'obrigado.html?code=' + code + '&email=' + encodeURIComponent(email) + '&nome=' + encodeURIComponent(nome);
     }, 1500);
