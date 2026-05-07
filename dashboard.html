@@ -351,7 +351,6 @@ function Dashboard() {
     { id: "custos", label: "Custos & Pressão" },
     { id: "documentos", label: "Jornada Documental" },
     { id: "compare", label: "Compare sua Operação" },
-    { id: "lacunas", label: "Metodologia & Lacunas" },
   ];
 
   const renderNav = () => (
@@ -392,7 +391,7 @@ function Dashboard() {
         <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Faturamento (R$ bi) vs Pedidos (mi)</h3>
           <ResponsiveContainer width="100%" height={280}>
-            <ComposedChart data={ECOMMERCE_SERIES}>
+            <ComposedChart data={ECOMMERCE_SERIES} margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
               <XAxis dataKey="year" stroke={COLORS.textDim} fontSize={11} />
               <YAxis yAxisId="left" stroke={COLORS.textDim} fontSize={11} />
@@ -408,7 +407,7 @@ function Dashboard() {
         <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Ticket Médio (R$) — A margem que encolhe</h3>
           <ResponsiveContainer width="100%" height={280}>
-            <AreaChart data={ECOMMERCE_SERIES}>
+            <AreaChart data={ECOMMERCE_SERIES} margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
               <XAxis dataKey="year" stroke={COLORS.textDim} fontSize={11} />
               <YAxis stroke={COLORS.textDim} fontSize={11} domain={[300, 550]} />
@@ -425,9 +424,9 @@ function Dashboard() {
         <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Frota de Caminhões por Região (mil)</h3>
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={REGIOES_DATA} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
-              <XAxis type="number" stroke={COLORS.textDim} fontSize={11} />
+            <BarChart data={REGIOES_DATA} layout="vertical" margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} horizontal={false} />
+              <XAxis type="number" stroke={COLORS.textDim} fontSize={11} label={{ value: "Mil caminhões", position: "insideBottom", offset: -10, fill: COLORS.textDim, fontSize: 10 }} />
               <YAxis type="category" dataKey="regiao" stroke={COLORS.textDim} fontSize={11} width={90} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="frota" name="Frota (mil)" radius={[0, 4, 4, 0]}>
@@ -441,10 +440,10 @@ function Dashboard() {
         <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Crescimento E-Commerce por Região (%)</h3>
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={REGIOES_DATA}>
-              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
+            <BarChart data={REGIOES_DATA} margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} vertical={false} />
               <XAxis dataKey="regiao" stroke={COLORS.textDim} fontSize={10} />
-              <YAxis stroke={COLORS.textDim} fontSize={11} />
+              <YAxis stroke={COLORS.textDim} fontSize={11} unit="%" />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="growth" name="Crescimento (%)" radius={[4, 4, 0, 0]}>
                 {REGIOES_DATA.map((d, i) => <Cell key={i} fill={REGION_COLORS[d.regiao]} />)}
@@ -469,15 +468,16 @@ function Dashboard() {
         <div style={{ display: "grid", gridTemplateColumns: sel ? "1fr 1fr" : "1fr", gap: 20, marginBottom: 32 }}>
           <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
             <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Top 16 Estados — Frota, Transportadores e E-Commerce</h3>
-            <ResponsiveContainer width="100%" height={500}>
-              <BarChart data={sorted} layout="vertical" onClick={(e) => e?.activeLabel && setSelectedState(sorted.find(s => s.nome === e.activeLabel)?.uf)}>
-                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
-                <XAxis type="number" stroke={COLORS.textDim} fontSize={10} />
-                <YAxis type="category" dataKey="uf" stroke={COLORS.textDim} fontSize={11} width={30} />
+            <ResponsiveContainer width="100%" height={420}>
+              <BarChart data={sorted} margin={{ top: 10, right: 10, bottom: 50, left: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} vertical={false} />
+                <XAxis dataKey="uf" stroke={COLORS.textDim} fontSize={10} angle={-45} textAnchor="end" interval={0} height={50} />
+                <YAxis stroke={COLORS.textDim} fontSize={10} label={{ value: "Milhares", angle: -90, position: "insideLeft", offset: -5, fill: COLORS.textDim, fontSize: 10 }} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="frota" name="Frota (mil)" fill={COLORS.accent} radius={[0, 3, 3, 0]} />
-                <Bar dataKey="transp" name="Transportadores (mil)" fill={COLORS.purple} radius={[0, 3, 3, 0]} />
-                <Bar dataKey="ecomVol" name="E-Com Volume (mi)" fill={COLORS.gold} radius={[0, 3, 3, 0]} />
+                <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} />
+                <Bar dataKey="frota" name="Frota (mil)" fill={COLORS.accent} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="transp" name="Transportadores (mil)" fill={COLORS.purple} radius={[3, 3, 0, 0]} />
+                <Bar dataKey="ecomVol" name="E-Com Volume (mi)" fill={COLORS.gold} radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -539,10 +539,10 @@ function Dashboard() {
         <SectionTitle sub="Estados com maior crescimento de e-commerce representam mercados emergentes com infraestrutura logística ainda deficiente.">Crescimento E-Commerce por Estado — Os mercados que explodem</SectionTitle>
         <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}`, marginBottom: 40 }}>
           <ResponsiveContainer width="100%" height={350}>
-            <ScatterChart>
+            <ScatterChart margin={{ top: 10, right: 20, bottom: 40, left: 50 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
-              <XAxis dataKey="frota" name="Frota (mil)" stroke={COLORS.textDim} fontSize={11} label={{ value: "Frota (mil caminhões)", position: "bottom", fill: COLORS.textDim, fontSize: 11 }} />
-              <YAxis dataKey="ecomGrowth" name="Crescimento (%)" stroke={COLORS.textDim} fontSize={11} label={{ value: "Crescimento E-Com (%)", angle: -90, position: "left", fill: COLORS.textDim, fontSize: 11 }} />
+              <XAxis dataKey="frota" name="Frota (mil)" stroke={COLORS.textDim} fontSize={11} label={{ value: "Frota (mil caminhões)", position: "insideBottom", offset: -25, fill: COLORS.textDim, fontSize: 11 }} />
+              <YAxis dataKey="ecomGrowth" name="Crescimento (%)" stroke={COLORS.textDim} fontSize={11} label={{ value: "Crescimento E-Com (%)", angle: -90, position: "insideLeft", offset: -35, fill: COLORS.textDim, fontSize: 11 }} />
               <Tooltip cursor={{ strokeDasharray: "3 3" }} content={({ active, payload }) => {
                 if (!active || !payload?.length) return null;
                 const d = payload[0].payload;
@@ -645,9 +645,9 @@ function Dashboard() {
           <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
             <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Score TMS por Vertical</h3>
             <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={VERTICAIS} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
-                <XAxis type="number" domain={[0, 100]} stroke={COLORS.textDim} fontSize={11} />
+              <BarChart data={VERTICAIS} layout="vertical" margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} horizontal={false} />
+                <XAxis type="number" domain={[0, 100]} stroke={COLORS.textDim} fontSize={11} label={{ value: "Score (0-100)", position: "insideBottom", offset: -10, fill: COLORS.textDim, fontSize: 10 }} />
                 <YAxis type="category" dataKey="nome" stroke={COLORS.textDim} fontSize={10} width={100} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="oppScore" name="Score TMS" radius={[0, 4, 4, 0]}>
@@ -661,10 +661,10 @@ function Dashboard() {
           <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
             <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Docs por Operação vs Score TMS</h3>
             <ResponsiveContainer width="100%" height={320}>
-              <ScatterChart>
+              <ScatterChart margin={{ top: 10, right: 20, bottom: 40, left: 50 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
-                <XAxis dataKey="docs" name="Docs/operação" stroke={COLORS.textDim} fontSize={11} label={{ value: "Documentos por operação", position: "bottom", fill: COLORS.textDim, fontSize: 10 }} />
-                <YAxis dataKey="oppScore" name="Score TMS" stroke={COLORS.textDim} fontSize={11} domain={[40, 100]} label={{ value: "Score TMS", angle: -90, position: "left", fill: COLORS.textDim, fontSize: 10 }} />
+                <XAxis dataKey="docs" name="Docs/operação" stroke={COLORS.textDim} fontSize={11} label={{ value: "Documentos por operação", position: "insideBottom", offset: -25, fill: COLORS.textDim, fontSize: 11 }} />
+                <YAxis dataKey="oppScore" name="Score TMS" stroke={COLORS.textDim} fontSize={11} domain={[40, 100]} label={{ value: "Score TMS", angle: -90, position: "insideLeft", offset: -35, fill: COLORS.textDim, fontSize: 11 }} />
                 <Tooltip content={({ active, payload }) => {
                   if (!active || !payload?.length) return null;
                   const d = payload[0].payload;
@@ -696,7 +696,7 @@ function Dashboard() {
         <div style={{ background: COLORS.card, borderRadius: 10, padding: 20, border: `1px solid ${COLORS.border}` }}>
           <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Frete (R$/km) vs Diesel (R$/L) — Correlação direta</h3>
           <ResponsiveContainer width="100%" height={320}>
-            <ComposedChart data={FRETE_DIESEL}>
+            <ComposedChart data={FRETE_DIESEL} margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={COLORS.gridStroke} />
               <XAxis dataKey="period" stroke={COLORS.textDim} fontSize={10} />
               <YAxis yAxisId="left" stroke={COLORS.textDim} fontSize={11} domain={[5.5, 8.5]} />
@@ -714,7 +714,7 @@ function Dashboard() {
           <h3 style={{ fontSize: 14, color: COLORS.textMuted, marginBottom: 16 }}>Composição do Custo de Frete</h3>
           <ResponsiveContainer width="100%" height={320}>
             <PieChart>
-              <Pie data={CUSTO_COMPOSICAO} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, value }) => `${name} ${value}%`} labelLine={false} style={{ fontSize: 10 }}>
+              <Pie data={CUSTO_COMPOSICAO} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, value, cx, cy, midAngle, innerRadius, outerRadius }) => { const RADIAN = Math.PI / 180; const radius = outerRadius + 20; const x = cx + radius * Math.cos(-midAngle * RADIAN); const y = cy + radius * Math.sin(-midAngle * RADIAN); return React.createElement("text", { x, y, fill: COLORS.textDim, textAnchor: x > cx ? "start" : "end", dominantBaseline: "central", fontSize: 11 }, name + " " + value + "%"); }}>
                 {CUSTO_COMPOSICAO.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
               </Pie>
               <Tooltip />
@@ -1124,7 +1124,6 @@ function Dashboard() {
         {activeSection === "custos" && renderCustos()}
         {activeSection === "documentos" && renderDocumentos()}
         {activeSection === "compare" && renderCompare()}
-        {activeSection === "lacunas" && renderLacunas()}
       </div>
 
       {/* CTA */}
